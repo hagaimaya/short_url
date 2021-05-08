@@ -27,7 +27,7 @@ namespace short_url
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ShortUrl", Version = "v1" });
             });
         }
 
@@ -42,8 +42,8 @@ namespace short_url
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = string.Empty;
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ShortUrl V1");
+                c.RoutePrefix = "api/swagger";
             });
             app.UseHttpsRedirection();
 
@@ -54,10 +54,6 @@ namespace short_url
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                 endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
             });
         }
     }
