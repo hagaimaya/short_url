@@ -1,14 +1,10 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using short_url.BusinessLogic;
 using short_url.Models;
 using System.Net;
-using short_url.Consts.Messages;
+using short_url.Consts;
 
 namespace short_url.Controllers
 {
@@ -27,21 +23,35 @@ namespace short_url.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RedirectPath>>> GetRedirectPaths()
         {
-            return _businesslogic.GetRedirectPaths();
+            try
+            {
+                return _businesslogic.GetRedirectPaths();
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         // GET: api/RedirectPath/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RedirectPath>> GetRedirectPath(long id)
         {
-            RedirectPath redirectPath = _businesslogic.GetRedirectPaths(id);
-
-            if (redirectPath == null)
+            try
             {
-                return NotFound(Messages.redirectNotFound);
-            }
+                RedirectPath redirectPath = _businesslogic.GetRedirectPaths(id);
 
-            return redirectPath;
+                if (redirectPath == null)
+                {
+                    return NotFound(Messages.redirectNotFound);
+                }
+
+                return redirectPath;
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         // PUT: api/RedirectPath/5
@@ -72,22 +82,40 @@ namespace short_url.Controllers
         [HttpPost]
         public async Task<ActionResult<RedirectPath>> PostRedirectPath(RedirectPath redirectPath)
         {
-            redirectPath = await _businesslogic.AddRedirectPath(redirectPath);
+            try
+            {
+                redirectPath = await _businesslogic.AddRedirectPath(redirectPath);
 
-            return CreatedAtAction(nameof(GetRedirectPath), new { id = redirectPath.Id }, redirectPath);
+                if (redirectPath == null)
+                {
+                    return StatusCode((int)HttpStatusCode.BadRequest);
+                }
+                return CreatedAtAction(nameof(GetRedirectPath), new { id = redirectPath.Id }, redirectPath);
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         // DELETE: api/RedirectPath/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRedirectPath(long id)
         {
-            bool deletedSuccessfully = await _businesslogic.DeleteRedirectPath(id);
-            if (!deletedSuccessfully)
+            try
             {
-                return NotFound(Messages.redirectNotFound);
-            }
+                bool deletedSuccessfully = await _businesslogic.DeleteRedirectPath(id);
+                if (!deletedSuccessfully)
+                {
+                    return NotFound(Messages.redirectNotFound);
+                }
 
-            return NoContent();
+                return NoContent();
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

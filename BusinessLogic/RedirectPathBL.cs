@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using short_url.Models;
+using short_url.Consts;
 
 namespace short_url.BusinessLogic
 {
@@ -60,7 +62,7 @@ namespace short_url.BusinessLogic
 
         public async Task<RedirectPath> AddRedirectPath(RedirectPath redirectPath)
         {
-            if (GetRedirectPaths(redirectPath.path) != null || GetRedirectPaths(redirectPath.Id) != null)
+            if (!ValidateDestination(redirectPath.destination) || !ValidatePath(redirectPath.path) || GetRedirectPaths(redirectPath.path) != null || GetRedirectPaths(redirectPath.Id) != null)
             {
                 return null;
             }
@@ -87,6 +89,48 @@ namespace short_url.BusinessLogic
         private bool RedirectPathExists(long id)
         {
             return _context.RedirectPaths.Any(e => e.Id == id);
+        }
+
+        public bool ValidatePath(string path)
+        {
+
+            return Regex.Match(path, ValidationConst.pathPattern).Length == path.Length;
+        }
+
+        public bool ValidateDestination(string destination)
+        {
+            string resevedHostsPattern = createRegexPatternFromArray(ValidationConst.reservedHostsPatterns);
+
+            return !Regex.Match(destination, resevedHostsPattern).Success;
+        }
+
+        private string createRegexPatternFromArray(string[] regexPatterns)
+        {
+            String pattern = string.Empty;
+
+            if (regexPatterns == null || regexPatterns.Length == 0)
+            {
+                return ValidationConst.denyAllPattern;
+            }
+
+            pattern = regexPatterns[0]; 
+            for (int regexIndex = 1; regexIndex < regexPatterns.Length; regexIndex++)
+            {
+                string currentPattern = regexPatterns[regexIndex].Trim();
+                if (currentPattern != string.Empty)
+                {
+                    pattern += String.Format("|{0}", currentPattern);
+                }
+            }
+
+            pattern = pattern.Trim();
+
+            if (pattern.Equals(string.Empty)){
+                return ValidationConst.denyAllPattern;
+            }
+
+            pattern = String.Format("({0})", pattern); 
+            return pattern;
         }
     }
 }

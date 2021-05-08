@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using short_url.BusinessLogic;
-using short_url.Models;
 using System.Net;
-using short_url.Consts.Messages;
+using Microsoft.AspNetCore.Mvc;
+using short_url.BusinessLogic;
+using short_url.Consts;
+using short_url.Models;
+
 
 namespace short_url.Controllers
 {
@@ -26,15 +21,29 @@ namespace short_url.Controllers
         [HttpGet]
         public IActionResult GetRedirect()
         {
-            string path = ControllerContext.HttpContext.Request.Path.ToString();
-            RedirectPath redirectPath = _businesslogic.GetRedirectPaths(path);
-
-            if (redirectPath == null)
+            try
             {
-                return NotFound(Messages.redirectNotFound);
-            }
+                string path = ControllerContext.HttpContext.Request.Path.ToString();
+                RedirectPath redirectPath = _businesslogic.GetRedirectPaths(path);
 
-            return Redirect(redirectPath.destination);
+                if (redirectPath == null)
+                {
+                    return NotFound(Messages.redirectNotFound);
+                }
+
+                if (_businesslogic.ValidateDestination(redirectPath.destination))
+                {
+                    return Redirect(redirectPath.destination);
+                }
+                else
+                {
+                    return StatusCode((int)HttpStatusCode.BadRequest);
+                }
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
 

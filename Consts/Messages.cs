@@ -1,5 +1,8 @@
-public static class Messages
+namespace short_url.Consts
 {
-    public static string redirectNotFound = "cannot find the requested path";
+    public static class Messages
+    {
+        public static string redirectNotFound = "cannot find the requested path";
 
+    }
 }
