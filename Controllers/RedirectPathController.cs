@@ -20,7 +20,7 @@ namespace short_url.Controllers
 
         public RedirectPathController(RedirectPathContext context)
         {
-             _businesslogic = new RedirectPathBL(context);
+            _businesslogic = new RedirectPathBL(context);
         }
 
         // GET: api/RedirectPath
@@ -49,18 +49,22 @@ namespace short_url.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRedirectPath(long id, RedirectPath redirectPath)
         {
-           try{
-               bool modifySuccess = await _businesslogic.ModifyRedirectPath(id,redirectPath);
-               if(!modifySuccess){
-                   return NotFound(Messages.redirectNotFound);
-               }
-               else{
-                   return NoContent();
-               }
-           }
-           catch{
-               return StatusCode((int)HttpStatusCode.InternalServerError);
-           }
+            try
+            {
+                bool modifySuccess = await _businesslogic.ModifyRedirectPath(id, redirectPath);
+                if (!modifySuccess)
+                {
+                    return NotFound(Messages.redirectNotFound);
+                }
+                else
+                {
+                    return NoContent();
+                }
+            }
+            catch
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         // POST: api/RedirectPath
@@ -68,7 +72,7 @@ namespace short_url.Controllers
         [HttpPost]
         public async Task<ActionResult<RedirectPath>> PostRedirectPath(RedirectPath redirectPath)
         {
-          redirectPath = await _businesslogic.AddRedirectPath(redirectPath);
+            redirectPath = await _businesslogic.AddRedirectPath(redirectPath);
 
             return CreatedAtAction(nameof(GetRedirectPath), new { id = redirectPath.Id }, redirectPath);
         }

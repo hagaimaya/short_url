@@ -8,7 +8,6 @@ namespace short_url.Models
             : base(options)
         {
         }
-
         public DbSet<RedirectPath> RedirectPaths { get; set; }
     }
 }

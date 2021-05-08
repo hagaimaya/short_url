@@ -20,19 +20,18 @@ namespace short_url.Controllers
 
         public RedirectController(RedirectPathContext context)
         {
-             _businesslogic = new RedirectPathBL(context);
+            _businesslogic = new RedirectPathBL(context);
         }
 
         [HttpGet]
-        public IActionResult  GetRedirect()
+        public IActionResult GetRedirect()
         {
-            
-            
             string path = ControllerContext.HttpContext.Request.Path.ToString();
             RedirectPath redirectPath = _businesslogic.GetRedirectPaths(path);
 
-            if(redirectPath == null){
-                return  NotFound(Messages.redirectNotFound);
+            if (redirectPath == null)
+            {
+                return NotFound(Messages.redirectNotFound);
             }
 
             return Redirect(redirectPath.destination);
