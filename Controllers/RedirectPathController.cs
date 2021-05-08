@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using short_url.BusinessLogic;
 using short_url.Models;
 using System.Net;
+using short_url.Consts.Messages;
 
 namespace short_url.Controllers
 {
@@ -37,7 +38,7 @@ namespace short_url.Controllers
 
             if (redirectPath == null)
             {
-                return NotFound();
+                return NotFound(Messages.redirectNotFound);
             }
 
             return redirectPath;
@@ -51,7 +52,7 @@ namespace short_url.Controllers
            try{
                bool modifySuccess = await _businesslogic.ModifyRedirectPath(id,redirectPath);
                if(!modifySuccess){
-                   return NotFound();
+                   return NotFound(Messages.redirectNotFound);
                }
                else{
                    return NoContent();
@@ -79,7 +80,7 @@ namespace short_url.Controllers
             bool deletedSuccessfully = await _businesslogic.DeleteRedirectPath(id);
             if (!deletedSuccessfully)
             {
-                return NotFound();
+                return NotFound(Messages.redirectNotFound);
             }
 
             return NoContent();

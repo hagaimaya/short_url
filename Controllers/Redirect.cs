@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using short_url.BusinessLogic;
 using short_url.Models;
 using System.Net;
+using short_url.Consts.Messages;
 
 namespace short_url.Controllers
 {
@@ -31,7 +32,7 @@ namespace short_url.Controllers
             RedirectPath redirectPath = _businesslogic.GetRedirectPaths(path);
 
             if(redirectPath == null){
-                return  NotFound("cannot find the requested path");
+                return  NotFound(Messages.redirectNotFound);
             }
 
             return Redirect(redirectPath.destination);
