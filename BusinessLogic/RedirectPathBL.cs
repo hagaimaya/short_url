@@ -31,7 +31,7 @@ namespace short_url.BusinessLogic
             return _context.RedirectPaths.FirstOrDefault<RedirectPath>(rp => rp.Id == id);
         }
 
-        public async bool ModifyRedirectPath(long id,RedirectPath redirectPath)
+        public async Task<bool> ModifyRedirectPath(long id,RedirectPath redirectPath)
         {
             if (id != redirectPath.Id)
             {
@@ -58,6 +58,30 @@ namespace short_url.BusinessLogic
             }
         }
 
+        public async Task<RedirectPath> AddRedirectPath(RedirectPath redirectPath){
+              if(GetRedirectPaths(redirectPath.path) != null || GetRedirectPaths(redirectPath.Id) != null){
+                  return null;
+              }
+              else{
+                _context.RedirectPaths.Add(redirectPath);
+                await _context.SaveChangesAsync();
+              }
+            
+            return redirectPath;
+        }
+
+        public async Task<bool> DeleteRedirectPath(long id){
+            var redirectPath = await _context.RedirectPaths.FindAsync(id);
+            if (redirectPath == null)
+            {
+                return false;
+            }
+
+            _context.RedirectPaths.Remove(redirectPath);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
          private bool RedirectPathExists(long id)
         {
             return _context.RedirectPaths.Any(e => e.Id == id);

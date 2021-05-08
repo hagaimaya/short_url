@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using short_url.Models;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace short_url
 {
@@ -23,6 +25,10 @@ namespace short_url
              services.AddDbContext<RedirectPathContext>(opt =>
                                                opt.UseInMemoryDatabase("RedirectPath"));
             services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,6 +39,12 @@ namespace short_url
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty;
+            });
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -42,6 +54,10 @@ namespace short_url
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                 endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("Hello World!");
+                });
             });
         }
     }

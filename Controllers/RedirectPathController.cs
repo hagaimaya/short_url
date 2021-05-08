@@ -49,7 +49,8 @@ namespace short_url.Controllers
         public async Task<IActionResult> PutRedirectPath(long id, RedirectPath redirectPath)
         {
            try{
-               if(!_businesslogic.ModifyRedirectPath(id,redirectPath)){
+               bool modifySuccess = await _businesslogic.ModifyRedirectPath(id,redirectPath);
+               if(!modifySuccess){
                    return NotFound();
                }
                else{
@@ -66,9 +67,7 @@ namespace short_url.Controllers
         [HttpPost]
         public async Task<ActionResult<RedirectPath>> PostRedirectPath(RedirectPath redirectPath)
         {
-            if(_context.RedirectPaths.Where<RedirectPath>(rp => rp.path.Equals() )
-            _context.RedirectPaths.Add(redirectPath);
-            await _context.SaveChangesAsync();
+          redirectPath = await _businesslogic.AddRedirectPath(redirectPath);
 
             return CreatedAtAction(nameof(GetRedirectPath), new { id = redirectPath.Id }, redirectPath);
         }
@@ -77,21 +76,13 @@ namespace short_url.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRedirectPath(long id)
         {
-            var redirectPath = await _context.RedirectPaths.FindAsync(id);
-            if (redirectPath == null)
+            bool deletedSuccessfully = await _businesslogic.DeleteRedirectPath(id);
+            if (!deletedSuccessfully)
             {
                 return NotFound();
             }
 
-            _context.RedirectPaths.Remove(redirectPath);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool RedirectPathExists(long id)
-        {
-            return _context.RedirectPaths.Any(e => e.Id == id);
         }
     }
 }
