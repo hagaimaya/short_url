@@ -5,6 +5,7 @@ using short_url.BusinessLogic;
 using short_url.Models;
 using System.Net;
 using short_url.Consts;
+using Microsoft.Extensions.Configuration;
 
 namespace short_url.Controllers
 {
@@ -14,9 +15,9 @@ namespace short_url.Controllers
     {
         private readonly RedirectPathBL _businesslogic;
 
-        public RedirectPathController(RedirectPathContext context)
+        public RedirectPathController(RedirectPathContext context, IConfiguration configuration)
         {
-            _businesslogic = new RedirectPathBL(context);
+            _businesslogic = new RedirectPathBL(context, configuration);
         }
 
         // GET: api/RedirectPath

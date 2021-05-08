@@ -8,15 +8,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using short_url.Models;
 using short_url.Consts;
+using Microsoft.Extensions.Configuration;
 
 namespace short_url.BusinessLogic
 {
     public class RedirectPathBL
     {
+        private readonly IConfiguration Configuration;
+
         private readonly RedirectPathContext _context;
 
-        public RedirectPathBL(RedirectPathContext context)
+        public RedirectPathBL(RedirectPathContext context, IConfiguration configuration)
         {
+             Configuration = configuration;
             _context = context;
         }
 
@@ -94,14 +98,14 @@ namespace short_url.BusinessLogic
         public bool ValidatePath(string path)
         {
 
-            return Regex.Match(path, ValidationConst.pathPattern).Length == path.Length;
+            return Regex.Match(path, Configuration[VairablesNames.pathPattern]).Length == path.Length;
         }
 
         public bool ValidateDestination(string destination)
         {
-            string resevedHostsPattern = createRegexPatternFromArray(ValidationConst.reservedHostsPatterns);
+            string resevedHostsPattern = createRegexPatternFromArray(Configuration[VairablesNames.reservedHostsPatterns].Split(Configuration[VairablesNames.delimiter]));
 
-            return !Regex.Match(destination, resevedHostsPattern).Success;
+            return Regex.Match(destination, resevedHostsPattern).Length == 0;
         }
 
         private string createRegexPatternFromArray(string[] regexPatterns)

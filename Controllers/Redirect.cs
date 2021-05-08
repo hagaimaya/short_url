@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using short_url.BusinessLogic;
 using short_url.Consts;
 using short_url.Models;
@@ -13,9 +14,9 @@ namespace short_url.Controllers
     {
         private readonly RedirectPathBL _businesslogic;
 
-        public RedirectController(RedirectPathContext context)
+        public RedirectController(RedirectPathContext context, IConfiguration configuration)
         {
-            _businesslogic = new RedirectPathBL(context);
+            _businesslogic = new RedirectPathBL(context, configuration);
         }
 
         [HttpGet]
